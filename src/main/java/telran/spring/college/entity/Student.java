@@ -1,5 +1,7 @@
 package telran.spring.college.entity;
 import java.time.LocalDate;
+import java.util.List;
+
 import jakarta.persistence.*;
 import telran.spring.college.dto.PersonDto;
 
@@ -16,8 +18,8 @@ public class Student extends Person {
     
   }
   public static Student of(PersonDto person) {
-	//possible additional validation
-	  return new Student(person);
+	return new Student(person);
   }
-
+  @OneToMany(mappedBy="student", cascade=CascadeType.REMOVE)
+  List<Mark> marks;
 }
