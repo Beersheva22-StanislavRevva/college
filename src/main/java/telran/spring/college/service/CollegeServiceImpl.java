@@ -1,5 +1,6 @@
 package telran.spring.college.service;
 
+import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -108,6 +109,23 @@ public class CollegeServiceImpl implements CollegeService {
 		MarkDto res = markRepo.save(markEntity).build();
 		log.debug("Mark added {}", res);
 		return res;
+	}
+
+	@Override
+	public List<IdName> bestStudentsLecturer(long lecturerId, int nStudents) {
+		
+		return studentRepo.findBestStudentsLecturer(lecturerId, nStudents);
+	}
+
+	@Override
+	public List<IdName> studentsAvgMarksGreaterCollegeAvg(int nMarksThreshold) {
+		
+		return studentRepo.findStudentsAvgMarksGreaterCollegeAvg(nMarksThreshold);
+	}
+
+	@Override
+	public List<StudentMark> allStudentsAvgMarks() {
+		return studentRepo.getAllStudentsAvgMarks();
 	}
 
 }

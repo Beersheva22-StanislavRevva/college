@@ -18,12 +18,13 @@ public class Subject {
 	String name;
 	int hours;
 	@Enumerated(EnumType.STRING)
-	SubjectType subjectType;
+	@Column(name = "type")
+	SubjectType type;
 	@ManyToOne
-	@JoinColumn(name = "lecture_id", nullable = true)
+	@JoinColumn(name = "lecturer_id", nullable = true)
 	Lecturer lecturer;
 	public SubjectDto build() {
-		return new SubjectDto(id, name, hours, lecturer == null ? null : lecturer.id, subjectType);
+		return new SubjectDto(id, name, hours, lecturer == null ? null : lecturer.id, type);
 	}
 	static public Subject of (SubjectDto subject) {
 		return new  Subject(subject.getId(), subject.getName(),subject.getHours(),subject.getSubjectType(),null);
