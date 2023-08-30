@@ -5,7 +5,7 @@ import telran.spring.college.dto.MarkDto;
 
 @Entity	
 @NoArgsConstructor
-@Table(name="marks")
+@Table(name="marks", indexes = {@Index(columnList = "student_id")})
 
 public class Mark {
 	
