@@ -160,14 +160,9 @@ long maxId;
 	@Override
 	@Transactional(readOnly = false)
 	public List<PersonDto> removeStudentsLessMarks(int nMarks) {
-		List<Student> students = studentRepo.findStudentsLessMark(nMarks);
-		students.forEach(s -> {
-		
-			log.debug("student with id {} is going to be deleted", s.getId());
-			studentRepo.delete(s);			
-		});
-		
-		return students.stream().map(Student::build).toList();
+		List<Student> studentsForRemoving = studentRepo.findStudentsLessMarks(nMarks);
+		studentRepo.removeStudentsLessMark(nMarks);
+		return studentsForRemoving.stream().map(Student::build).toList();
 	}
 
 }

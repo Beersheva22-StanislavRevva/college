@@ -85,7 +85,6 @@ class CollegeServiceUpdateDeletesTests {
 	}
 	@Test
 	@Order(7)
-	
 	@Sql(scripts = {"college-read-test-script.sql"})
 	void removeStudentsLessMark() {
 		List<PersonDto> studentsRemoved = collegeService.removeStudentsLessMarks(3);

@@ -2,6 +2,9 @@ package telran.spring.college.entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.*;
 import telran.spring.college.dto.PersonDto;
 
@@ -21,5 +24,6 @@ public class Student extends Person {
 	return new Student(person);
   }
   @OneToMany(mappedBy="student", cascade=CascadeType.REMOVE)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   List<Mark> marks;
 }
