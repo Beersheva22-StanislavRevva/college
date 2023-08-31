@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import telran.spring.college.dto.PersonDto;
 import telran.spring.college.entity.Subject;
+import telran.spring.college.repo.LecturerRepository;
 import telran.spring.college.repo.StudentRepository;
 import telran.spring.college.repo.SubjectRepository;
 import telran.spring.college.service.CollegeService;
@@ -31,12 +32,16 @@ class CollegeServiceUpdateDeletesTests {
 	private static final Long STUDENT_REMOVED_ID = 126l;
 	private static final Long STUDENT_REMOVED_ID_0 = 124l;
 	private static final Long STUDENT_REMOVED_ID_1 = 126l;
+	private static final String SUBJECT_ID_FRONT_1 = "S3";
+	private static final String SUBJECT_ID_FRONT_2 = "S4";
 	@Autowired
 	CollegeService collegeService;
 	@Autowired
 	SubjectRepository subjectRepo;
 	@Autowired
 	StudentRepository studentRepo;
+	@Autowired
+	LecturerRepository lecturerRepo;
 	
 	@Test
 	@Order(1)
@@ -98,4 +103,17 @@ class CollegeServiceUpdateDeletesTests {
 		assertNull(studentRepo.findById(STUDENT_REMOVED_ID_0).orElse(null));
 		assertNull(studentRepo.findById(STUDENT_REMOVED_ID_1).orElse(null));
 	}
+	@Test
+	@Order(9)
+	@Sql(scripts = {"college-read-test-script.sql"})
+	
+	void removeLecturerTest() {
+		collegeService.removeLecturer(LECTURER_ID);
+		Subject subject1 = subjectRepo.findById(SUBJECT_ID_FRONT_1).get();
+		Subject subject2 = subjectRepo.findById(SUBJECT_ID_FRONT_2).get();
+		assertNull(subject1.getLecturer());
+		assertNull(subject2.getLecturer());
+				
+	}
+	
 }

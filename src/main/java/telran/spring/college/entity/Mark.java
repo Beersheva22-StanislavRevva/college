@@ -12,10 +12,10 @@ public class Mark {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	int id;
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="student_id", nullable=false)
 	Student student;
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="subject_id", nullable=false)
 	Subject subject;
 	@Column(nullable=false)

@@ -1,4 +1,7 @@
 package telran.spring.college.entity;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,8 +23,9 @@ public class Subject {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "type")
 	SubjectType type;
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name = "lecturer_id", nullable = true)
+	@OnDelete(action = OnDeleteAction.SET_NULL)
 	Lecturer lecturer;
 	public SubjectDto build() {
 		return new SubjectDto(id, name, hours, lecturer == null ? null : lecturer.id, type);

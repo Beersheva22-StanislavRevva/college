@@ -1,5 +1,8 @@
 package telran.spring.college.service;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -8,6 +11,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.spring.college.dto.*;
@@ -23,6 +28,7 @@ final StudentRepository studentRepo;
 final SubjectRepository subjectRepo;
 final LecturerRepository lecturerRepo;
 final MarkRepository markRepo;
+final EntityManager em;
 @Value("${app.person.id.min:100000}")
 long minId;
 @Value("${app.person.id.max:999999}")
@@ -163,6 +169,37 @@ long maxId;
 		List<Student> studentsForRemoving = studentRepo.findStudentsLessMarks(nMarks);
 		studentRepo.removeStudentsLessMark(nMarks);
 		return studentsForRemoving.stream().map(Student::build).toList();
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public PersonDto removeLecturer(long lecturerId) {
+		Lecturer lecturerRemoved = lecturerRepo.findById(lecturerId)
+				.orElseThrow(() -> new NotFoundException(lecturerId + "lecturer doesn't exist"));
+		lecturerRepo.deleteById(lecturerId);
+		return lecturerRemoved.build();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<String> jpqlQuery(String queryStr) {
+		Query query = em.createQuery(queryStr);
+		List<?> resultList = query.getResultList();
+		List<String> result = Collections.emptyList();
+		if(!resultList.isEmpty()) {
+			result = resultList.get(0).getClass().isArray() ? processMultiProjectionQuery((List<Object[]>) resultList) : processSingleProjectionQuery((List<Object>) resultList);
+		}
+		return result;
+	}
+
+	private List<String> processSingleProjectionQuery(List<Object> resultList) {
+		
+		return  resultList.stream().map(Object::toString).toList();
+	}
+
+	private List<String> processMultiProjectionQuery(List<Object[]> resultList) {
+		
+		return  resultList.stream().map(Arrays::deepToString).toList();
 	}
 
 }
