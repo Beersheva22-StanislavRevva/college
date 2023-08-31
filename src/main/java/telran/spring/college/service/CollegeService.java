@@ -16,4 +16,5 @@ SubjectDto updateHours(String subjectId, int hours);
 SubjectDto updateLecturer(String subjectId, Long lecturerId);
 List<PersonDto> removeStudentsNoMarks();
 List<PersonDto> removeStudentsLessMarks(int nMarks);
+
 }
