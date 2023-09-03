@@ -1,7 +1,8 @@
 package telran.spring.college.service;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -134,12 +135,11 @@ long maxId;
 	}
 
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional (readOnly = false)
 	public SubjectDto updateHours(String subjectId, int hours) {
 		Subject subject = subjectRepo.findById(subjectId)
 				.orElseThrow(() -> new NotFoundException(String.format("Subject with id %s doesn't exist in DB", subjectId)));
 		subject.setHours(hours);
-		
 		return subject.build();
 	}
 
@@ -153,38 +153,40 @@ long maxId;
 			lecturer = lecturerRepo.findById(lecturerId)
 					.orElseThrow(() -> new NotFoundException(String.format("Lecturer with id %d doesn't exist in DB", lecturerId)));
 		}
-		subject.setLecturer(lecturer);		
+		subject.setLecturer(lecturer);
 		return subject.build();
 	}
 
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional(readOnly=false)
 	public List<PersonDto> removeStudentsNoMarks() {
 		return removeStudentsLessMarks(1);
 	}
 
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional(readOnly=false)
 	public List<PersonDto> removeStudentsLessMarks(int nMarks) {
-		List<Student> studentsForRemoving = studentRepo.findStudentsLessMarks(nMarks);
+		List<Student> studentForRemoving = studentRepo.findStudentsLessMarks(nMarks);
 		studentRepo.removeStudentsLessMark(nMarks);
-		return studentsForRemoving.stream().map(Student::build).toList();
+		
+		
+		return studentForRemoving.stream().map(Student::build).toList();
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	public PersonDto removeLecturer(long lecturerId) {
 		Lecturer lecturerRemoved = lecturerRepo.findById(lecturerId)
-				.orElseThrow(() -> new NotFoundException(lecturerId + "lecturer doesn't exist"));
-		lecturerRepo.deleteById(lecturerId);
+				.orElseThrow(() -> new NotFoundException(lecturerId + " lecturer doesn't exist"));
+		lecturerRepo.delete(lecturerRemoved);
 		return lecturerRemoved.build();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<String> jpqlQuery(JpqlDto jpqlQuery) {
-		Query query = em.createQuery(jpqlQuery.getQuery());
-		Integer limit = jpqlQuery.getLimit();
+	public List<String> jpqlQuery(QueryDto queryDto) {
+		Query query = em.createQuery(queryDto.query());
+		Integer limit = queryDto.limit();
 		if(limit != null && limit > 0) {
 			query.setMaxResults(limit);
 			
@@ -192,19 +194,20 @@ long maxId;
 		List<?> resultList = query.getResultList();
 		List<String> result = Collections.emptyList();
 		if(!resultList.isEmpty()) {
-			result = resultList.get(0).getClass().isArray() ? processMultiProjectionQuery((List<Object[]>) resultList) : processSingleProjectionQuery((List<Object>) resultList);
+			result = resultList.get(0).getClass().isArray() ? procesMultiprojectionQuery((List<Object[]>)resultList) :
+				processSingleprojectionQuery((List<Object>)resultList);
 		}
 		return result;
 	}
 
-	private List<String> processSingleProjectionQuery(List<Object> resultList) {
+	private List<String> processSingleprojectionQuery(List<Object> resultList) {
 		
-		return  resultList.stream().map(Object::toString).toList();
+		return resultList.stream().map(Object::toString).toList();
 	}
 
-	private List<String> processMultiProjectionQuery(List<Object[]> resultList) {
+	private List<String> procesMultiprojectionQuery(List<Object[]> resultList) {
 		
-		return  resultList.stream().map(Arrays::deepToString).toList();
+		return resultList.stream().map(Arrays::deepToString).toList();
 	}
 
 }

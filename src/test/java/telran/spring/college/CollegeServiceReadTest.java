@@ -6,10 +6,7 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 import telran.spring.college.dto.*;
-import telran.spring.college.entity.Student;
-import telran.spring.college.entity.Subject;
-import telran.spring.college.repo.StudentRepository;
-import telran.spring.college.repo.SubjectRepository;
+import telran.spring.college.repo.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import telran.spring.college.entity.*;
 import telran.spring.college.service.CollegeService;
 @SpringBootTest
 @Sql(scripts = {"college-read-test-script.sql"})
-class CollegeServiceReadTest {
+class CollegeServiceReadTests {
 	@Autowired
 CollegeService service;
 	@Autowired
@@ -65,6 +63,7 @@ CollegeService service;
 		assertThrows(Exception.class, ()-> subject.getLecturer().getName());
 		
 	}
+	
 	@Test
 	void fetchMarksNoTransactionTest() {
 		Student student = studentRepo.findById(123l).get();
@@ -72,36 +71,36 @@ CollegeService service;
 		
 	}
 	@Test
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	void fetchLecturerTest() {
 		Subject subject = subjectRepo.findById("S3").get();
 		assertEquals("Sara Abramovna", subject.getLecturer().getName());
 	}
+	
 	@Test
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	void fetchMarksTest() {
 		Student student = studentRepo.findById(123l).get();
 		assertEquals(4, student.getMarks().size());
 	}
+	@Test
+	void jpqlSingleProjectionTest() {
+		String query = "select id from Student order by id";
+		List<String> res = service.jpqlQuery(new QueryDto(query, 3));
+		assertEquals(3, res.size());
+		String[] expected = {"123", "124", "125"};
+		assertArrayEquals(expected, res.toArray(String[]::new));
+		
+	}
+	@Test
+	void jpqlMultyProjerctionTest() {
+		String query = "select id, name from Student order by id";
+		List<String> res = service.jpqlQuery(new QueryDto(query, null));
+		assertEquals(5, res.size());
+		String[] expected = {"[123, Vasya]", "[124, Sara]", "[125, Yosef]", "[126, David]", "[127, Rivka]"};
+		assertArrayEquals(expected, res.toArray(String[]::new));
+	}
 	
-// Test were disables because service.jpqlQuery was updated
-//	@Test
-//	void jpqlSingleProjectionTest() {
-//		String query = "select id from Student order by id";
-//		List<String> res = service.jpqlQuery(query);
-//		assertEquals(5, res.size());
-//		String[] expected = {"123", "124", "125", "126", "127"};
-//		assertArrayEquals(expected, res.toArray(String[]::new));
-//	}
-	
-//	@Test
-//	void jpqlMultiProjectionTest() {
-//		String query = "select id from Student order by id";
-//		List<String> res = service.jpqlQuery(query);
-//		assertEquals(5, res.size());
-//		String[] expected = {"[123, Vasya]", "[124, Sara]", "[125, Yosef]", "[126, David]", "[127, Rivka]"};
-//		assertArrayEquals(expected, res.toArray(String[]::new));
-//	}
 	
 
 }
