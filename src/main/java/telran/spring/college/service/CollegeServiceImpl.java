@@ -182,8 +182,13 @@ long maxId;
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<String> jpqlQuery(String queryStr) {
-		Query query = em.createQuery(queryStr);
+	public List<String> jpqlQuery(JpqlDto jpqlQuery) {
+		Query query = em.createQuery(jpqlQuery.getQuery());
+		Integer limit = jpqlQuery.getLimit();
+		if(limit != null && limit > 0) {
+			query.setMaxResults(limit);
+			
+		}
 		List<?> resultList = query.getResultList();
 		List<String> result = Collections.emptyList();
 		if(!resultList.isEmpty()) {

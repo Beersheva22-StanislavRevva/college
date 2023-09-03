@@ -24,13 +24,13 @@ public class CollegeController {
 CollegeService service;
 
 @PostMapping
-public List<String> jpqlQuery(@RequestBody @Valid JpqlDto jpqlQueryStr) {
+public List<String> jpqlQuery(@RequestBody @Valid JpqlDto jpqlQuery) {
 	List<String> res = null;
-	String queryStr = jpqlQueryStr.getQuery();
 	try {
-	 res = service.jpqlQuery(queryStr);
+	 res = service.jpqlQuery(jpqlQuery);
 	} catch (Exception e) {
-		log.error("Unnable to perfom query - " + queryStr,  e);
+		log.error("Unnable to perfom query - " + jpqlQuery.getQuery(),  e);
+		throw new IllegalStateException(e.getMessage());
 	}
 	return res;
 }

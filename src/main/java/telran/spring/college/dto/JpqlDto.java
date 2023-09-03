@@ -13,4 +13,5 @@ import lombok.NoArgsConstructor;
 public class JpqlDto implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String query;
+	private int limit;
 }
